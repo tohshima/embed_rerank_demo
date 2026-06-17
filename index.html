@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Embedding & Reranker ライブデモ</title>
+<link rel="stylesheet" href="style.css" />
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+<script src="https://cdn.jsdelivr.net/npm/umap-js@1.4.0/lib/umap-js.min.js"></script>
+</head>
+<body>
+<header>
+  <h1>🔎 Embedding &amp; Reranker ライブデモ</h1>
+  <span class="sub">ベクトル検索 / BM25 / Reranker を見比べて学ぶ — すべてブラウザ内（transformers.js）で実行</span>
+  <div id="status" class="loading"><span class="dot"></span><span id="statusText">モデル読み込み中…</span></div>
+</header>
+
+<main>
+  <!-- 左：入力パネル -->
+  <section class="panel" id="inputPanel">
+    <h2>入力</h2>
+
+    <div class="field">
+      <label for="presetSelect">プリセット（学習シナリオ）</label>
+      <select id="presetSelect"></select>
+      <div class="note" id="presetNote"></div>
+    </div>
+
+    <div class="field">
+      <label for="modelSelect">埋め込みモデル（精度↔速度）</label>
+      <select id="modelSelect">
+        <option value="Xenova/multilingual-e5-small">multilingual-e5-small（軽量・高速）</option>
+        <option value="Xenova/multilingual-e5-base" selected>multilingual-e5-base（バランス・推奨）</option>
+        <option value="Xenova/multilingual-e5-large">multilingual-e5-large（高精度・重い）</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="queryInput">クエリ文（検索したい質問）</label>
+      <textarea id="queryInput" rows="2"></textarea>
+    </div>
+
+    <div class="field">
+      <label>ドキュメント（DB内の文章）</label>
+      <div class="doc-list" id="docList"></div>
+      <div class="row-actions">
+        <button class="btn ghost" id="addDocBtn">＋ 文を追加</button>
+        <button class="btn" id="runBtn">再計算</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 右：可視化 -->
+  <section class="viz-col">
+    <div class="panel">
+      <h2>ベクトルの2次元可視化</h2>
+      <div class="proj-controls">
+        <span>次元圧縮:</span>
+        <label><input type="radio" name="proj" value="umap" checked /> UMAP</label>
+        <label><input type="radio" name="proj" value="pca" /> PCA</label>
+        <span style="margin-left:auto">点の色 = クエリとのコサイン類似度</span>
+      </div>
+      <div id="plot"></div>
+      <div class="legend">
+        <span><i style="background:var(--query)"></i>クエリ</span>
+        <span><i style="background:var(--vector)"></i>ドキュメント（数字=ID／近いほど意味が類似）</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>トークン化（モデルが見ている単位）</h2>
+      <div class="tok-meta">クエリ:</div>
+      <div class="tokens" id="queryTokens"></div>
+      <div class="tok-meta">ドキュメントを選択して確認:</div>
+      <select id="tokenDocSelect"></select>
+      <div class="tokens" id="docTokens"></div>
+    </div>
+
+    <div class="panel">
+      <h2>検索結果の比較</h2>
+      <div class="results">
+        <div class="result-col vec">
+          <h3><span class="tag"></span>① Vector検索</h3>
+          <div class="help">埋め込みのコサイン類似度順。意味の近さで並ぶ。</div>
+          <div id="vecResults"></div>
+        </div>
+        <div class="result-col bm">
+          <h3><span class="tag"></span>② BM25検索</h3>
+          <div class="help">語の一致頻度ベース。キーワード一致に強い。</div>
+          <div id="bmResults"></div>
+        </div>
+        <div class="result-col rr">
+          <h3><span class="tag"></span>③ Reranker</h3>
+          <div class="help">Vector上位をクロスエンコーダで精密に再採点。矢印=Vector順位からの変化。</div>
+          <div id="rrResults"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  埋め込み: multilingual-e5 ／ Reranker: bge-reranker-base ／ 次元圧縮: umap-js・PCA ／ 推論はすべてあなたのブラウザ内（ONNX / WASM）で実行されます。初回はモデルのダウンロードに時間がかかります。
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
