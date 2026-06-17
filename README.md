@@ -68,4 +68,4 @@ serve.sh      簡易サーバー起動
 
 ## License
 
-[MIT](LICENSE) © 2026 Tetsu Ohshima
+[MIT](LICENSE) © 2026 tohshima
