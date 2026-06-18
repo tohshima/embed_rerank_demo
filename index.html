@@ -81,15 +81,15 @@
     <div class="panel">
       <h2>検索結果の比較</h2>
       <div class="results">
-        <div class="result-col vec">
-          <h3><span class="tag"></span>① Vector検索</h3>
-          <div class="help">埋め込みのコサイン類似度順。意味の近さで並ぶ。</div>
-          <div id="vecResults"></div>
-        </div>
         <div class="result-col bm">
-          <h3><span class="tag"></span>② BM25検索</h3>
+          <h3><span class="tag"></span>① BM25検索</h3>
           <div class="help">語の一致頻度ベース。キーワード一致に強い。</div>
           <div id="bmResults"></div>
+        </div>
+        <div class="result-col vec">
+          <h3><span class="tag"></span>② Vector検索</h3>
+          <div class="help">埋め込みのコサイン類似度順。意味の近さで並ぶ。</div>
+          <div id="vecResults"></div>
         </div>
         <div class="result-col rr">
           <h3><span class="tag"></span>③ Reranker</h3>
