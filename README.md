@@ -20,8 +20,12 @@
 
 | 役割 | モデル | 備考 |
 |---|---|---|
-| 埋め込み | `Xenova/multilingual-e5-{small,base,large}` | UIで切替可。多言語対応 |
+| 埋め込み | `onnx-community/ruri-v3-30m-ONNX` | 日本語特化・超軽量(30M)。mean pooling / `検索クエリ:`・`検索文書:` prefix |
+| 埋め込み | `Xenova/multilingual-e5-{small,base,large}` | 多言語汎用。mean pooling / `query:`・`passage:` prefix |
+| 埋め込み | `Xenova/bge-m3` | 多言語・最高精度（重い）。CLS pooling / prefixなし |
 | Reranker | `Xenova/bge-reranker-base` | 多言語クロスエンコーダ |
+
+埋め込みモデルはUIのドロップダウンで切替できます。モデルごとに pooling 方式と prefix が異なる点も学習ポイントです（[app.js](app.js) の `EMBED_MODELS`）。
 
 初回はモデル（量子化 q8）のダウンロードが走るため、起動に少し時間がかかります。2回目以降はブラウザにキャッシュされます。
 
