@@ -24,8 +24,10 @@
 | 埋め込み | `Xenova/multilingual-e5-{small,base,large}` | 多言語汎用。mean pooling / `query:`・`passage:` prefix |
 | 埋め込み | `Xenova/bge-m3` | 多言語・最高精度（重い）。CLS pooling / prefixなし |
 | 埋め込み | `jinaai/jina-embeddings-v2-base-code` | コード特化（英語/30+プログラミング言語）。mean pooling / prefixなし |
+| 埋め込み | `Xenova/bge-base-en-v1.5` | 英語特化・高精度。CLS pooling / クエリにinstruction prefix |
 | Reranker | `Xenova/bge-reranker-base` | 多言語汎用・軽量なクロスエンコーダ |
 | Reranker | `onnx-community/bge-reranker-v2-m3-ONNX` | 多言語・高精度（重い）。baseが苦手なコード/混在クエリで改善 |
+| Reranker | `Xenova/ms-marco-MiniLM-L-6-v2` | 英語特化・軽量なクロスエンコーダ（MS MARCO定番） |
 
 埋め込み・Reranker ともにUIのドロップダウンで切替できます。モデルごとに pooling 方式と prefix が異なる点も学習ポイントです（[app.js](app.js) の `EMBED_MODELS`）。
 

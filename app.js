@@ -20,6 +20,8 @@ const EMBED_MODELS = {
   "Xenova/bge-m3": { pooling: "cls", queryPrefix: "", passagePrefix: "" },
   "onnx-community/ruri-v3-30m-ONNX": { pooling: "mean", queryPrefix: "検索クエリ: ", passagePrefix: "検索文書: " },
   "jinaai/jina-embeddings-v2-base-code": { pooling: "mean", queryPrefix: "", passagePrefix: "" },
+  // bge-en系はCLS pooling。クエリにのみ検索用instructionを付ける（passageは無し）
+  "Xenova/bge-base-en-v1.5": { pooling: "cls", queryPrefix: "Represent this sentence for searching relevant passages: ", passagePrefix: "" },
 };
 const embedCfg = () => EMBED_MODELS[embedModelName] || EMBED_MODELS["Xenova/multilingual-e5-base"];
 
