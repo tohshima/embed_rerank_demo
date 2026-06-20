@@ -23,9 +23,13 @@
 | 埋め込み | `onnx-community/ruri-v3-30m-ONNX` | 日本語特化・超軽量(30M)。mean pooling / `検索クエリ:`・`検索文書:` prefix |
 | 埋め込み | `Xenova/multilingual-e5-{small,base,large}` | 多言語汎用。mean pooling / `query:`・`passage:` prefix |
 | 埋め込み | `Xenova/bge-m3` | 多言語・最高精度（重い）。CLS pooling / prefixなし |
-| Reranker | `Xenova/bge-reranker-base` | 多言語クロスエンコーダ |
+| 埋め込み | `jinaai/jina-embeddings-v2-base-code` | コード特化（英語/30+プログラミング言語）。mean pooling / prefixなし |
+| Reranker | `Xenova/bge-reranker-base` | 多言語汎用・軽量なクロスエンコーダ |
+| Reranker | `onnx-community/bge-reranker-v2-m3-ONNX` | 多言語・高精度（重い）。baseが苦手なコード/混在クエリで改善 |
 
-埋め込みモデルはUIのドロップダウンで切替できます。モデルごとに pooling 方式と prefix が異なる点も学習ポイントです（[app.js](app.js) の `EMBED_MODELS`）。
+埋め込み・Reranker ともにUIのドロップダウンで切替できます。モデルごとに pooling 方式と prefix が異なる点も学習ポイントです（[app.js](app.js) の `EMBED_MODELS`）。
+
+> **Rerankerとコード:** 汎用の `bge-reranker-base` はプログラミング系クエリで的外れな並べ替えをすることがあります（例: 「リストを逆順に」に対し無関係な `append()` を上位化）。より強力な `bge-reranker-v2-m3` に切り替えると改善します。なお `jina-reranker-v2`（コード対応）は config に `model_type` が無く transformers.js でロードできないため非採用です。
 
 初回はモデル（量子化 q8）のダウンロードが走るため、起動に少し時間がかかります。2回目以降はブラウザにキャッシュされます。
 

@@ -9,7 +9,6 @@ import { PRESETS } from "./presets.js";
 // CDNからモデルを取得する（ローカルモデルは使わない）
 env.allowLocalModels = false;
 
-const RERANK_MODEL = "Xenova/bge-reranker-base"; // 多言語クロスエンコーダ
 const DEVICE = "wasm"; // 互換性重視。WebGPU対応環境なら "webgpu" に変更可
 const DTYPE = "q8"; // 量子化でダウンロードを軽量化
 
@@ -20,11 +19,18 @@ const EMBED_MODELS = {
   "Xenova/multilingual-e5-large": { pooling: "mean", queryPrefix: "query: ", passagePrefix: "passage: " },
   "Xenova/bge-m3": { pooling: "cls", queryPrefix: "", passagePrefix: "" },
   "onnx-community/ruri-v3-30m-ONNX": { pooling: "mean", queryPrefix: "検索クエリ: ", passagePrefix: "検索文書: " },
+  "jinaai/jina-embeddings-v2-base-code": { pooling: "mean", queryPrefix: "", passagePrefix: "" },
 };
 const embedCfg = () => EMBED_MODELS[embedModelName] || EMBED_MODELS["Xenova/multilingual-e5-base"];
 
+// Rerankerはどちらもクロスエンコーダ(XLM-RoBERTa)で単一ロジットを出力 → sigmoidで関連度化（UIで選択）
+// - Xenova/bge-reranker-base            : 多言語汎用・軽量
+// - onnx-community/bge-reranker-v2-m3-ONNX : 多言語・高精度（baseより大幅に強い／重い）
+// 注: jina-reranker-v2 は config に model_type が無く transformers.js でロード不可のため非採用
+
 // ---- 状態 ----
 let embedModelName = document.getElementById("modelSelect").value;
+let rerankModelName = document.getElementById("rerankSelect").value;
 let extractor = null; // feature-extraction pipeline
 let embedTokenizer = null;
 let rerankTokenizer = null;
@@ -59,11 +65,11 @@ async function loadEmbedder(name) {
   embedModelName = name;
 }
 
-async function loadReranker() {
-  setStatus("loading", "Reranker 読み込み中: bge-reranker-base …");
-  rerankTokenizer = await AutoTokenizer.from_pretrained(RERANK_MODEL);
+async function loadReranker(name) {
+  setStatus("loading", `Reranker 読み込み中: ${name.split("/").pop()} …`);
+  rerankTokenizer = await AutoTokenizer.from_pretrained(name);
   rerankModel = await AutoModelForSequenceClassification.from_pretrained(
-    RERANK_MODEL,
+    name,
     {
       dtype: DTYPE,
       device: DEVICE,
@@ -75,6 +81,7 @@ async function loadReranker() {
       },
     }
   );
+  rerankModelName = name;
 }
 
 // =================== 埋め込み・類似度 ===================
@@ -570,9 +577,24 @@ function initUI() {
   );
   $("tokenDocSelect").addEventListener("change", (e) => showDocTokens(+e.target.value));
   $("modelSelect").addEventListener("change", async (e) => {
-    await loadEmbedder(e.target.value);
-    setStatus("ready", "モデル切替完了");
-    computeAll();
+    try {
+      await loadEmbedder(e.target.value);
+      setStatus("ready", "埋め込みモデル切替完了");
+      computeAll();
+    } catch (err) {
+      console.error(err);
+      setStatus("error", "埋め込み読み込み失敗: " + err.message);
+    }
+  });
+  $("rerankSelect").addEventListener("change", async (e) => {
+    try {
+      await loadReranker(e.target.value);
+      setStatus("ready", "Reranker切替完了");
+      computeAll();
+    } catch (err) {
+      console.error(err);
+      setStatus("error", "Reranker読み込み失敗: " + err.message);
+    }
   });
 }
 
@@ -580,7 +602,7 @@ async function main() {
   initUI();
   try {
     await loadEmbedder(embedModelName);
-    await loadReranker();
+    await loadReranker(rerankModelName);
     setStatus("ready", "準備完了 — 入力するとリアルタイムで更新されます");
     await computeAll();
   } catch (err) {

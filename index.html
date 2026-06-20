@@ -34,6 +34,15 @@
         <option value="Xenova/multilingual-e5-base" selected>multilingual-e5-base（多言語・バランス）</option>
         <option value="Xenova/multilingual-e5-large">multilingual-e5-large（多言語・高精度）</option>
         <option value="Xenova/bge-m3">bge-m3（多言語・最高精度・重い）</option>
+        <option value="jinaai/jina-embeddings-v2-base-code">jina-embeddings-v2-base-code（コード特化・英語/コード）</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="rerankSelect">Reranker モデル</label>
+      <select id="rerankSelect">
+        <option value="Xenova/bge-reranker-base" selected>bge-reranker-base（多言語汎用・軽量）</option>
+        <option value="onnx-community/bge-reranker-v2-m3-ONNX">bge-reranker-v2-m3（多言語・高精度・重い）</option>
       </select>
     </div>
 
@@ -102,7 +111,7 @@
 </main>
 
 <footer>
-  埋め込み: multilingual-e5 ／ Reranker: bge-reranker-base ／ 次元圧縮: umap-js・PCA ／ 推論はすべてあなたのブラウザ内（ONNX / WASM）で実行されます。初回はモデルのダウンロードに時間がかかります。
+  埋め込み: ruri-v3 / multilingual-e5 / bge-m3 / jina-code（UIで切替）／ Reranker: bge-reranker-base / bge-reranker-v2-m3（UIで切替）／ 次元圧縮: umap-js・PCA ／ 推論はすべてあなたのブラウザ内（ONNX / WASM）で実行されます。初回はモデルのダウンロードに時間がかかります。
 </footer>
 
 <script type="module" src="app.js"></script>
